@@ -1,7 +1,9 @@
 import numpy as np
 import joblib
+import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
+import os
 
 from train import scaler
 
@@ -27,3 +29,11 @@ def predict(data: MushroomInput):
 @app.get("/")
 def read_root():
     return("Welcome to Mushroom Yield Prediction")
+import os
+
+if __name__ == "__main__":
+    import uvicorn
+
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
+
