@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV, cross_val_score
@@ -11,6 +10,15 @@ from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.pipeline import make_pipeline
 import matplotlib.pyplot as plt
 import seaborn as sns
+import joblib
+from fastapi import FastAPI, UploadFile, File
+from pydantic import BaseModel
+import logging
+from fastapi.responses import JSONResponse
+import os
+import uvicorn
+
+# ----------- MODEL TRAINING AND SAVING --------------
 
 # Step 1: Load the dataset
 df = pd.read_csv('mushroom_harvest_cycles_with_nulls.csv')
@@ -101,17 +109,12 @@ plt.title("Actual vs Predicted Yield (Stacking Model)")
 plt.grid(True)
 plt.show()
 
-import joblib
+# Save model and scaler
 joblib.dump(stacking_model, 'stacking_model.pkl')
 joblib.dump(scaler, 'scaler.pkl')
 
-from fastapi import FastAPI, UploadFile, File
-from pydantic import BaseModel
-import numpy as np
-import pandas as pd
-import joblib
-import logging
-from fastapi.responses import JSONResponse
+
+# ----------- FASTAPI APP --------------
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -125,31 +128,13 @@ model = joblib.load("stacking_model.pkl")
 scaler = joblib.load("scaler.pkl")
 
 # Define input schema
-=======
-import numpy as np
-import joblib
-import uvicorn
-from fastapi import FastAPI
-from pydantic import BaseModel
-import os
-
-from train import scaler
-
-#load the trained model
-model = joblib.load('model/stacking_model.pkl')
-
-#create an instance of fastapi
-app = FastAPI()
-
->>>>>>> daf4a4da6bc97aad3174b4bd9a60b6a174273835
 class MushroomInput(BaseModel):
     temperature: float
     humidity: float
     ph: float
     co2: float
 
-<<<<<<< HEAD
-# JSON-based prediction
+# JSON-based prediction endpoint
 @app.post("/predict")
 def predict(data: MushroomInput):
     try:
@@ -164,7 +149,7 @@ def predict(data: MushroomInput):
         logger.error("Error during JSON prediction: %s", str(e))
         return JSONResponse(status_code=500, content={"error": "Internal server error during prediction."})
 
-# CSV-based prediction
+# CSV-based prediction endpoint
 @app.post("/predict_csv")
 def predict_csv(file: UploadFile = File(...)):
     try:
@@ -198,23 +183,15 @@ def predict_csv(file: UploadFile = File(...)):
     except Exception as e:
         logger.error("Error during CSV prediction: %s", str(e))
         return JSONResponse(status_code=500, content={"error": "Internal server error during CSV prediction."})
-=======
-@app.post("/predict")
-def predict(data: MushroomInput):
-    input_data = np.array([[data.temperature, data.humidity, data.ph, data.co2]])
-    input_scaled = scaler.transform(input_data)
-    prediction = model.predict(input_scaled)
-    return {"predicted_yield_kg": round(prediction[0], 2)}
 
+# Root endpoint
 @app.get("/")
 def read_root():
-    return("Welcome to Mushroom Yield Prediction")
-import os
+    return {"message": "Welcome to Mushroom Yield Prediction"}
 
+# Run app with Uvicorn
 if __name__ == "__main__":
-    import uvicorn
-
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
->>>>>>> daf4a4da6bc97aad3174b4bd9a60b6a174273835
+
 
