@@ -188,13 +188,6 @@ def predict_csv(file: UploadFile = File(...)):
 @app.get("/")
 def read_root():
     return {"message": "Welcome to Mushroom Yield Prediction"}
-# Run app with Uvicorn
-if __name__ == "__main__":
-    import os
-    import uvicorn
-
-    port = int(os.environ.get("PORT", 8080))  # required by platforms like Render
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
 
 
 
