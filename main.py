@@ -18,9 +18,20 @@ from fastapi.responses import JSONResponse
 import os
 import uvicorn
 import io
+from fastapi.middleware.cors import CORSMiddleware
+
 
  # Initialize FastAPI app
 app = FastAPI()
+
+# Enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Change this to your frontend domain in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
