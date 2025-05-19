@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV, cross_val_score
@@ -124,12 +125,30 @@ model = joblib.load("stacking_model.pkl")
 scaler = joblib.load("scaler.pkl")
 
 # Define input schema
+=======
+import numpy as np
+import joblib
+import uvicorn
+from fastapi import FastAPI
+from pydantic import BaseModel
+import os
+
+from train import scaler
+
+#load the trained model
+model = joblib.load('model/stacking_model.pkl')
+
+#create an instance of fastapi
+app = FastAPI()
+
+>>>>>>> daf4a4da6bc97aad3174b4bd9a60b6a174273835
 class MushroomInput(BaseModel):
     temperature: float
     humidity: float
     ph: float
     co2: float
 
+<<<<<<< HEAD
 # JSON-based prediction
 @app.post("/predict")
 def predict(data: MushroomInput):
@@ -179,4 +198,23 @@ def predict_csv(file: UploadFile = File(...)):
     except Exception as e:
         logger.error("Error during CSV prediction: %s", str(e))
         return JSONResponse(status_code=500, content={"error": "Internal server error during CSV prediction."})
+=======
+@app.post("/predict")
+def predict(data: MushroomInput):
+    input_data = np.array([[data.temperature, data.humidity, data.ph, data.co2]])
+    input_scaled = scaler.transform(input_data)
+    prediction = model.predict(input_scaled)
+    return {"predicted_yield_kg": round(prediction[0], 2)}
+
+@app.get("/")
+def read_root():
+    return("Welcome to Mushroom Yield Prediction")
+import os
+
+if __name__ == "__main__":
+    import uvicorn
+
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
+>>>>>>> daf4a4da6bc97aad3174b4bd9a60b6a174273835
 
