@@ -93,3 +93,4 @@ print(f"  R² Scores (folds): {cv_scores}")
 print(f"  Average R² Score : {np.mean(cv_scores):.4f}")
 
 joblib.dump(stacking_model, 'model/stacking_model.pkl')
+joblib.dump(scaler, 'scaler.pkl')
